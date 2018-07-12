@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Recherche - {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+
+    <div id ="content" class="container">
+        <div id="lien">
+            <a href="{{ path ('recherche') }}">Retour à la liste des annonces</a>
+        </div>
+        <div id="entete" class="row">
+            <div class="col-sm-6">
+                <h1>
+                    {{ annonce.title }}
+                </h1>
+            </div>
+            <div class="col-sm-6">
+                créée le : {{ annonce.dateCreated | date ('d/m/Y h:m:s') }}
+            </div>
+        </div>
+        <div id="description">
+            <p>
+                {{ annonce.description }}
+            </p>
+        </div>
+        <div>
+            <p>
+                Prix: {{ annonce.price }} €
+            </p>
+            <p>
+                Lieu: {{ annonce.zip }} {{ annonce.city|upper}}
+            </p>
+        </div>
+        {# si l'utilisateur connecté est l'utilisateur qui a déposé l'annonce#}
+        {% if annonce.user == is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+            {# formulaire de suppression d'une annonce #}
+            <form action="{{ path('supprimer_annonce', {'id':annonce.id}) }}" method="post">
+                <input type="hidden" value="DELETE" name="_method"/>
+
+                {#génère un token à la validation du formulaire#}
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete-item') }}">
+
+                <button class="btn btn-secondary"  type="submit">supprimer</button>
+            </form>
+            {# bouton de modification d'annonce#}
+            <a href="{{ path('modifier_annonce',{'id': annonce.id}) }}" method="post">
+                    modifier</a>
+        {% endif %}
+    </div>
+
+
+{% endblock %}

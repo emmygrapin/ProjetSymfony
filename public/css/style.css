@@ -1,0 +1,16 @@
+html{
+    height: 100%;
+}
+#content{
+    height: 1000px;
+}
+#header{
+    background-color: #e0a800;
+    padding: 10px;
+}
+#footer{
+    background-color: #e0a800;
+}
+ul.characteristics{
+    list-style-type: none;
+}

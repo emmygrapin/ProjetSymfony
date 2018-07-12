@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Catalogue - {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+    <div id ="content" class="container">
+        Bienvenue dans la page de mes favoris
+
+    {% block tableau %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Titre</th>
+                <th scope="col">Favoris</th>
+                <th scope="col">Description</th>
+                <th scope="col">Price</th>
+                <th scope="col">Date de création</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            {% for annonce in annonces %}
+                <tr>
+                    <td><a href="{{ path ('detail_annonce',{'id': annonce.id }) }}">{{ annonce.title }}</a></td>
+                    <td><a href="{{ path('supprimer_favoris',{'id': annonce.id ,'page': 1 }) }}" title="supprimer des favoris"><i class="far fa-star"></i></a></td>
+                    <td>{{ annonce.description }}</td>
+                    <td>{{ annonce.price }}</td>
+                    <td>{{ annonce.dateCreated |date('d/m/Y h:i:s') }}</td>
+                </tr>
+            {% endfor %}
+
+
+            </tbody>
+        </table>
+
+    {% endblock %}
+    </div>
+{% endblock %}

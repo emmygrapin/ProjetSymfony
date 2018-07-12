@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Mes annonces - {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+    <div id ="content" class="container">
+        Bienvenue dans la page de mes annonces
+
+        {% block tableau %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Date de création</th>
+                    <th scope="col">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                {% for annonce in annonces %}
+                    <tr>
+                        <td><a href="{{ path ('detail_annonce',{'id': annonce.id }) }}">{{ annonce.title }}</a></td>
+                        <td>{{ annonce.description }}</td>
+                        <td>{{ annonce.price }}</td>
+                        <td>{{ annonce.dateCreated |date('d/m/Y h:i:s') }}</td>
+                        <td>
+                            <form action="{{ path('supprimer_annonce', {'id':annonce.id}) }}" method="post">
+                                <input type="hidden" value="DELETE" name="_method"/>
+
+                                {#génère un token à la validation du formulaire#}
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete-item') }}">
+
+                                <button class="btn btn-secondary"  type="submit">supprimer</button>
+                            </form>
+                            <a href="{{ path('modifier_annonce',{'id': annonce.id}) }}" method="post">
+                                modifier</a></td>
+                    </tr>
+                {% endfor %}
+
+
+                </tbody>
+            </table>
+
+        {% endblock %}
+    </div>
+{% endblock %}

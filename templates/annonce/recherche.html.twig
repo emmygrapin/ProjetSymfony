@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Recherche - {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+    <div id ="content" class="container">
+        <div id="headerRecherche">
+            <fieldset  class="border p-2">
+                <legend  class="w-auto">Rechercher une annonce</legend>
+                <div  class="row">
+
+                    <div class="col-lg-8 offset-1">
+
+                        <form action="{{ path('recherche_annonce', {'page':1}) }}" method="get">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label>Rechercher une annonce par catégorie</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <select name="category">
+                                        <option value="">Choisissez une catégorie</option>
+                                        {% for category in categories %}
+                                            {% set selected="" %}
+                                            {% if request is defined and request['category'] == category.id %}
+                                            {% set selected='selected' %}
+                                            {% endif %}
+                                            <option value="{{ category.id }}" {{ selected }}>{{ category.libelle }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label>Rechercher une annonce par mot clé</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <input type="text" placeholder="Saisir un mot clé..." name="motCle" value="{{ request['motCle']|default('') }}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label>Rechercher une annonce par prix minimum</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <input type="text" placeholder="Saisir un prix min" name="prixMin" value="{{ request['prixMin']|default('') }}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label>Rechercher une annonce par prix maximum</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <input type="text" placeholder="Saisir un prix max" name="prixMax" value="{{ request['prixMax']|default('') }}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6 offset-6">
+                                    <button type="submit">Rechercher</button>
+                                </div>
+                            </div>
+                            </form>
+                    </div>
+                </div>
+
+            </fieldset>
+        </div>
+        {% block tableau %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Favoris</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Date de création</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                {% for annonce in annonces %}
+                    <tr>
+                        <td><a href="{{ path ('detail_annonce',{'id': annonce.id }) }}">{{ annonce.title }}</a></td>
+                        <td>
+                            {% set estFavori = false %}
+                            {%  for annonceFavoris in annoncesFavoris %}
+                                {% if annonce.id == annonceFavoris.id %}
+                                    {% set estFavori = true %}
+                                {% endif %}
+                            {% endfor %}
+                            {% if estFavori %}
+                                <a href="{{ path('supprimer_favoris',{'id': annonce.id }) }}" title="supprimer des favoris">
+                                    <i class="far fa-star"></i></a>
+                            {% else %}
+                                <a href="{{ path('ajouter_favoris',{'id': annonce.id }) }}" title="ajouter aux favoris">
+                                    <i class="fa fa-star"></i></a>
+                            {% endif %}
+                        </td>
+                        <td>{{ annonce.description }}</td>
+                        <td>{{ annonce.price }}</td>
+                        <td>{{ annonce.dateCreated |date('d/m/Y h:i:s') }}</td>
+                    </tr>
+                {% endfor %}
+
+
+                </tbody>
+            </table>
+
+        {% endblock %}
+
+    </div>
+
+{% endblock %}

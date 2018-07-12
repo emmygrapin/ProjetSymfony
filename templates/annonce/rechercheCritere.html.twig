@@ -1,0 +1,56 @@
+{% extends 'annonce/recherche.html.twig' %}
+
+{% block tableau %}
+    <h6>{{ nbAnnonces }} annonces</h6>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Titre</th>
+            <th scope="col">Favoris</th>
+            <th scope="col">Description</th>
+            <th scope="col">Price</th>
+        </tr>
+        </thead>
+
+
+    <tbody>
+
+    {% for annonce in annonces %}
+        <tr>
+            <td><a href="{{ path ('detail_annonce',{'id': annonce.id }) }}">{{ annonce.title }}</a></td>
+            <td>
+                {% set estFavori= false %}
+                {%  for annonceFavoris in annoncesFavoris %}
+                    {% if annonce.id == annonceFavoris.id %}
+                        {% set estFavori = true %}
+                    {% endif %}
+                {% endfor %}
+                {% if estFavori %}
+                <a href="{{ path('supprimer_favoris',{'id': annonce.id }) }}" title="supprimer des favoris">
+                    <i class="far fa-star"></i></a>
+                {% else %}
+                <a href="{{ path('ajouter_favoris',{'id': annonce.id }) }}" title="ajouter aux favoris">
+                    <i class="fa fa-star"></i></a>
+                {% endif %}
+                </td>
+            <td> {{ annonce.description }}</td>
+            <td>{{ annonce.price }}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+    </table>
+    <div>
+        {% for page in 1..nbPages %}
+            {% if page == pageActuelle %}
+                <a class="font-weight-bold" href="{{ path ('recherche_annonce',request|merge({'page': page })  ) }}">{{ page }}</a>
+                {% else %}
+                    <a href="{{ path ('recherche_annonce',request|merge({'page': page })  ) }}">{{ page }}</a>
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+{% endblock %}
+
+

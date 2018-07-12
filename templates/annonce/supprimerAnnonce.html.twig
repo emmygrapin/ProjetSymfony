@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Nouvelle Annonce - {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+
+    <div id ="content" class="container">
+        Bienvenue dans la page de suppression d'annonce!
+        {% for error  in app.flashes('error') %}
+            {{ error }}
+        {% endfor %}
+        {% for message  in app.flashes('message') %}
+            {{ message }}
+        {% endfor %}
+
+    </div>
+{% endblock %}

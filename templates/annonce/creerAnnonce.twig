@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Annonces - {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+    {% form_theme form 'bootstrap_4_layout.html.twig' %}
+    <div id ="content" class="container">
+        <div class="row">
+            {% for error  in app.flashes('error') %}
+                {{ error }}
+            {% endfor %}
+            {% for message  in app.flashes('message') %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="col-lg-6">
+
+                <legend>Créer une annonce</legend>
+                {{ form_start(form) }}
+            <fieldset>
+                {{ form_row(form.title)}}
+                {{ form_row(form.category)}}
+                {{ form_row(form.description)}}
+                {{ form_row(form.city)}}
+                {{ form_row(form.zip)}}
+                {{ form_row(form.price)}}
+
+                <ul class="characteristics" data-prototype="{{ form_widget(form.characteristics.vars.prototype)|e('html_attr') }}">
+                    {{ form_row(form.characteristics) }}
+                </ul>
+
+                <input type="submit" name="form" value="Valider">
+            </fieldset>
+                {{ form_end(form) }}
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+  <script>
+    var $collectionHolder;
+
+    //Ajout d'une caractéristique
+    var $addCharacteristicButton = $('<button type="button" class="add_characteristic_link">Ajouter une caractéristique</button>');
+
+    var $newLinkLi = $('<li class="add"></li>').append($addCharacteristicButton);
+
+    jQuery(document).ready(function(){
+    //affiche la balise ul qui se nomme characteristics
+    $collectionHolder = $('ul.characteristics');
+
+    //ajoute une balise li avec un bouton "ajouter une caractéristique"
+    $collectionHolder.append($newLinkLi);
+
+    //compter le nombre d'inputs pour incrémenter le prochain
+    $collectionHolder.data('index',$collectionHolder.find(':input').length);
+
+    $collectionHolder.find('li[class!=add]').each(function() {
+            addCharacteristicFormDeleteLink($(this));
+        });
+
+    //définit l'action du bouton "ajouter une caractéristique"
+    $addCharacteristicButton.on('click',function (e) {
+    addCharacteristicForm($collectionHolder, $newLinkLi);
+    });
+    });
+
+
+
+    function addCharacteristicForm($collectionHolder,$newLinkLi){
+
+    var prototype = $collectionHolder.data('prototype');
+    var index = $collectionHolder.data('index');
+    var newForm = prototype;
+    newForm = newForm.replace(/__name__/g,index);
+
+
+    $collectionHolder.data('index', index + 1);
+
+    var $newFormLi = $('<li></li>').append(newForm);
+    $newLinkLi.before($newFormLi);
+
+    addCharacteristicFormDeleteLink($newFormLi);
+
+    };
+    function addCharacteristicFormDeleteLink($newFormLi){
+        var $removeFormButton = $('<button type="button">Supprimer la caractéristique</button>');
+        $newFormLi.append($removeFormButton);
+
+        $removeFormButton.on('click', function(e) {
+            // remove the li for the tag form
+            $newFormLi.remove();
+        });
+    };
+
+
+  </script>
+{% endblock %}

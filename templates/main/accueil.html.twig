@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Catalogue - {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+    <div id ="content" class="container">
+
+           Bienvenue {{ user ? user.username : '' }} sur le site du Meilleur Coin !!!!
+
+            <div id ="content" class="container">
+
+                {% for error  in app.flashes('error') %}
+                    {{ error }}
+                {% endfor %}
+                {% for message  in app.flashes('message') %}
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+            </div>
+
+
+    </div>
+{% endblock %}
+
+

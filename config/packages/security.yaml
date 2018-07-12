@@ -1,0 +1,44 @@
+security:
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    providers:
+        #in_memory: { memory: ~ }
+        our_db_provider:
+            entity:
+                class: App\Entity\User
+                property: username
+    encoders:
+        App\Entity\User: bcrypt
+# comportement de la sécurité
+    firewalls:
+    # firewall de dév où on désactive la sécurité pour  public et profiler
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+    # firewall du main
+        main:
+        #On autorise tous les utilisateurs à utiliser l'application
+            anonymous: true
+            #on définit un form_login et les routes de contrôle de formulaire
+            form_login:
+                login_path: login
+                check_path: login
+                default_target_path: _security.main.target_path
+            #  à quel endroit se situe les utilisateurs
+            provider: our_db_provider
+            logout:
+               path: /logout
+               target: /
+            # activate different ways to authenticate
+
+            # http_basic: true
+            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+
+            # form_login: true
+            # https://symfony.com/doc/current/security/form_login_setup.html
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+         - { path: ^/inscription, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+         - { path: ^/. , roles:ROLE_USER }

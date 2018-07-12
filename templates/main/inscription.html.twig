@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Inscription - {{ parent() }}
+{% endblock %}
+
+
+
+{% block body %}
+    {% form_theme form 'bootstrap_4_layout.html.twig' %}
+    <div id ="content" class="container">
+        <div class="col-lg-6">
+            <fieldset>
+                <legend>S'inscrire</legend>
+                {{ form_start(form) }}
+                {{ form_widget(form)}}
+                <div>
+                    <input type="submit" name="form" value="Valider">
+                </div>
+                {{ form_end(form) }}
+            </fieldset>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Annonces - {{ parent() }}
+{% endblock %}
+
+
+{% block body %}
+    {% form_theme form 'bootstrap_4_layout.html.twig' %}
+    <div id ="content" class="container">
+        <div class="row">
+            {% for error  in app.flashes('error') %}
+                {{ error }}
+            {% endfor %}
+            {% for message  in app.flashes('message') %}
+               <div class="alert alert-success" role="alert">
+                   {{ message }}
+               </div>
+            {% endfor %}
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <fieldset>
+                    <legend>Modifier une annonce</legend>
+                    {{ form_start(form) }}
+                    {{ form_widget(form)}}
+                    <div>
+                        <input type="submit" name="form" value="Valider">
+                    </div>
+                    {{ form_end(form) }}
+                </fieldset>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
