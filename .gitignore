@@ -24,4 +24,4 @@ yarn-error.log
 ###< friendsofphp/php-cs-fixer ###
 
 
-/.idea/
+/src/.idea/
