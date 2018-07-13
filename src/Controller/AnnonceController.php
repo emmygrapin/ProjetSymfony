@@ -107,32 +107,39 @@ class AnnonceController extends Controller
 
     }
 
-
-    /**
-     * méthode pour afficher une page qui permet de rechercher une annonce
-
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @Route("/recherche", name="recherche")
-     */
-    public function recherche(EntityManagerInterface $em, AdRepository $adRepository)
-    {
-        $user = $this->getUser();
-        $categories = $em->getRepository(Category::class)->findAll();
-        $limitAll = 100;
-        $annonces = $adRepository->findByLimit($limitAll);
-        if ($this->isGranted('ROLE_USER')) {
-            $annoncesFavoris= $em->getRepository(Ad::class)->findByLiker($user);
-        } else {
-            $annoncesFavoris=null;
-        }
-
-        return $this->render('annonce/recherche.html.twig', [
-            'categories'=>$categories,
-            'annonces'=>$annonces,
-            'annoncesFavoris'=>$annoncesFavoris
-
-        ]);
-}
+//    /**
+//     * méthode pour afficher une page qui permet de rechercher une annonce
+//     *
+//     * @return \Symfony\Component\HttpFoundation\Response
+//     * @Route("/recherche/{page}", name="recherche")
+//     */
+//    public function recherche(EntityManagerInterface $em, AdRepository $adRepository,$page)
+//    {
+//
+//        $user = $this->getUser();
+//        $categories = $em->getRepository(Category::class)->findAll();
+//        $annoncesTot = $adRepository->findAll();
+//        $annonces = $adRepository->findAllAds($page);
+//
+//        if ($this->isGranted('ROLE_USER')) {
+//            $annoncesFavoris= $em->getRepository(Ad::class)->findByLiker($user);
+//        } else {
+//            $annoncesFavoris=null;
+//        }
+//        $limit=10;
+//        $nbAnnonces =count($annoncesTot);
+//        $nbPages= ceil($nbAnnonces/$limit);
+//
+//        return $this->render('annonce/recherche.html.twig', [
+//            'categories'=>$categories,
+//            'annonces'=>$annonces,
+//            'annoncesFavoris'=>$annoncesFavoris,
+//            'nbAnnonces'=>$nbAnnonces,
+//            'nbPages'=>$nbPages,
+//            'pageActuelle'=> $page,
+//
+//        ]);
+//}
     /**
      * méthode pour rechercher une annonce par un mot clé dans le titre
      * @param EntityManagerInterface $em
@@ -140,15 +147,23 @@ class AnnonceController extends Controller
      * @return \Symfony\Component\HttpFoundation\Response
      * @Route("/recherche-annonce/{page}", name="recherche_annonce")
      */
-    public function rechercheAnnonce(EntityManagerInterface $em,Request $request, $page)
+    public function rechercheAnnonce(EntityManagerInterface $em,AdRepository $adRepository, Request $request, $page)
     {
+        $categories = $em->getRepository(Category::class)->findAll();
         $params = $request->query->all();
-
         $limit = 10;
 
-        $categories = $em->getRepository(Category::class)->findAll();
-        $annoncesTot= $this->adRepository->findBySearch($params,null);
-        $annonces = $this->adRepository->findBySearch($params,$page);
+        if(!$params){
+            $annoncesTot= $adRepository->findAll();
+            $annonces = $adRepository->findAllAds($page);
+        }
+
+        else{
+            $annoncesTot= $adRepository->findBySearch($params,null);
+            $annonces = $adRepository->findBySearch($params,$page);
+
+        }
+        $nbAnnonces =count($annoncesTot);
 
         if($this->isGranted('ROLE_USER'))
         {$annoncesFavoris= $this->adRepository->findByLiker($this->getUser());
@@ -156,20 +171,14 @@ class AnnonceController extends Controller
         else{
             $annoncesFavoris = null;
         }
-        $nbAnnonces =count($annoncesTot);
         $nbPages= ceil($nbAnnonces/$limit);
 
-        return $this->render('annonce/rechercheCritere.html.twig', [
+        return $this->render('annonce/recherche.html.twig', [
             'annoncesFavoris'=>$annoncesFavoris,
             'annonces' => $annonces,
             'categories'=>$categories,
-            'nbAnnonces'=>count($annonces),
-            'request'=> [
-                "category"=> $params['category'],
-                "motCle" => $params['motCle'],
-                "prixMin" => $params['prixMin'],
-                "prixMax" => $params['prixMax'],
-            ],
+            'nbAnnonces'=>$nbAnnonces,
+            'request'=> $params,
             'pageActuelle'=> $page,
             'nbPages'=>$nbPages
         ]);

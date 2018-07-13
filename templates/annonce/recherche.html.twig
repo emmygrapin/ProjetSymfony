@@ -24,7 +24,7 @@
                                         <option value="">Choisissez une catégorie</option>
                                         {% for category in categories %}
                                             {% set selected="" %}
-                                            {% if request is defined and request['category'] == category.id %}
+                                            {% if request is defined and request.category | default('') == category.id  %}
                                             {% set selected='selected' %}
                                             {% endif %}
                                             <option value="{{ category.id }}" {{ selected }}>{{ category.libelle }}</option>
@@ -37,7 +37,7 @@
                                     <label>Rechercher une annonce par mot clé</label>
                                 </div>
                                 <div class="col-lg-6">
-                                    <input type="text" placeholder="Saisir un mot clé..." name="motCle" value="{{ request['motCle']|default('') }}">
+                                    <input type="text" placeholder="Saisir un mot clé..." name="motCle" value="{{ request.motCle|default('') }}">
                                 </div>
                             </div>
                             <div class="row">
@@ -45,7 +45,7 @@
                                     <label>Rechercher une annonce par prix minimum</label>
                                 </div>
                                 <div class="col-lg-6">
-                                    <input type="text" placeholder="Saisir un prix min" name="prixMin" value="{{ request['prixMin']|default('') }}">
+                                    <input type="text" placeholder="Saisir un prix min" name="prixMin" value="{{ request.prixMin|default('') }}">
                                 </div>
                             </div>
                             <div class="row">
@@ -53,7 +53,7 @@
                                     <label>Rechercher une annonce par prix maximum</label>
                                 </div>
                                 <div class="col-lg-6">
-                                    <input type="text" placeholder="Saisir un prix max" name="prixMax" value="{{ request['prixMax']|default('') }}">
+                                    <input type="text" placeholder="Saisir un prix max" name="prixMax" value="{{ request.prixMax|default('') }}">
                                 </div>
                             </div>
                             <div class="row">
@@ -68,6 +68,7 @@
             </fieldset>
         </div>
         {% block tableau %}
+            <h6>{{ nbAnnonces }} annonces</h6>
             <table class="table">
                 <thead>
                 <tr>
@@ -75,9 +76,9 @@
                     <th scope="col">Favoris</th>
                     <th scope="col">Description</th>
                     <th scope="col">Price</th>
-                    <th scope="col">Date de création</th>
                 </tr>
                 </thead>
+
 
                 <tbody>
 
@@ -85,7 +86,7 @@
                     <tr>
                         <td><a href="{{ path ('detail_annonce',{'id': annonce.id }) }}">{{ annonce.title }}</a></td>
                         <td>
-                            {% set estFavori = false %}
+                            {% set estFavori= false %}
                             {%  for annonceFavoris in annoncesFavoris %}
                                 {% if annonce.id == annonceFavoris.id %}
                                     {% set estFavori = true %}
@@ -99,17 +100,26 @@
                                     <i class="fa fa-star"></i></a>
                             {% endif %}
                         </td>
-                        <td>{{ annonce.description }}</td>
+                        <td> {{ annonce.description }}</td>
                         <td>{{ annonce.price }}</td>
-                        <td>{{ annonce.dateCreated |date('d/m/Y h:i:s') }}</td>
                     </tr>
                 {% endfor %}
 
-
                 </tbody>
             </table>
+            <div>
+                {% for page in 1..nbPages %}
+                    {% if page == pageActuelle %}
+                        <a class="font-weight-bold" href="{{ path ('recherche_annonce',request|merge({'page': page })  ) }}">{{ page }}</a>
+                    {% else %}
+                        <a href="{{ path ('recherche_annonce',request|merge({'page': page })  ) }}">{{ page }}</a>
+                    {% endif %}
 
+                {% endfor %}
+
+            </div>
         {% endblock %}
+
 
     </div>
 

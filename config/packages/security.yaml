@@ -22,7 +22,7 @@ security:
             form_login:
                 login_path: login
                 check_path: login
-                default_target_path: _security.main.target_path
+
             #  à quel endroit se situe les utilisateurs
             provider: our_db_provider
             logout:

@@ -28,18 +28,34 @@ class AdRepository extends ServiceEntityRepository
      * @param $offset
      * @return mixed
      */
-    public function findByLimit($limit){
+    public function findAllAds($page){
         $em =$this->getEntityManager();
+        $limit = 10;
+        if($page){
+            $offset =($page * $limit) - $limit;
+        }
+        else {
+            $offset = 0;
+        }
+
         $dql ="SELECT a
                 FROM App\Entity\Ad a
                 ORDER BY a.dateCreated DESC ";
+
         $query= $em->createQuery($dql);
         $query->setMaxResults($limit);
-       $result =$query->getResult();
+        $query->setFirstResult($offset);
+        $result =$query->getResult();
+
        return $result;
 
     }
 
+    /**
+     * @param array $params
+     * @param $page
+     * @return mixed
+     */
     public function findBySearch(Array $params,$page){
         $em = $this->getEntityManager();
         $limit = 10;
@@ -50,29 +66,34 @@ class AdRepository extends ServiceEntityRepository
             $offset = 0;
         }
         $dql = "SELECT a
-                FROM App\Entity\Ad a 
-                WHERE a.category = :category
-                ";
+                FROM App\Entity\Ad a
+                WHERE 1=1";
 
         if(!empty($params['category'])) {
-            $dql.= " and a.title LIKE :motCle";
+            $dql.=" and a.category = :category";
         }
-        if (!empty($params['motCle'])) {
-            $dql.= " and a.price >= :prixMin";
+        if(!empty($params['motCle'])) {
+            $dql.=" and a.title LIKE :motCle";
         }
         if (!empty($params['prixMin'])) {
+            $dql.= " and a.price >= :prixMin";
+        }
+        if (!empty($params['prixMax'])) {
             $dql.= " and a.price <= :prixMax";
         }
         $query = $em ->createQuery($dql);
-        $query->setParameter('category',$params['category']);
+
 
         if(!empty($params['category'])) {
-            $query->setParameter('motCle',"%".$params['motCle']."%");
+            $query->setParameter('category',$params['category']);
         }
-        if (!empty($params['motCle'])) {
-            $query->setParameter('prixMin',$params['prixMin']);
+        if(!empty($params['motCle'])) {
+            $query->setParameter('motCle', '%'.$params['motCle'].'%');
         }
         if (!empty($params['prixMin'])) {
+            $query->setParameter('prixMin',$params['prixMin']);
+        }
+        if (!empty($params['prixMax'])) {
             $query->setParameter('prixMax',$params['prixMax']);
         }
         $query->setMaxResults($limit);
@@ -81,67 +102,6 @@ class AdRepository extends ServiceEntityRepository
         return $result;
     }
 
-
-    /**
-     * rechercher une annonce si le titre contient par mot clé
-     * @return Ad[] Returns an array of Ad Objects
-     */
-    public function findByMotCle($motCle,$orderBy,$limit,$offset){
-        $em =$this->getEntityManager();
-        $dql="SELECT a
-                FROM App\Entity\Ad a
-                WHERE a.title LIKE :motCle";
-       $query =$em->createQuery($dql);
-       $query->setParameter('motCle',"%$motCle%");
-        $query->setMaxResults($limit);
-        $query->setFirstResult($offset);
-       $result= $query->getResult();
-       return $result;
-    }
-
-    /**
-     * Rechercher toutes les annonces dont le prix est inférieur au prix max
-     * @param $prixMax
-     * @Return Ad[]
-     */
-    public function findByPrixMax($prixMax,$orderBy,$limit,$offset){
-        $em=$this->getEntityManager();
-        $dql="SELECT a
-                FROM App\Entity\Ad a
-                WHERE a.price <= :prixMax";
-        $query = $em->createQuery($dql);
-        $query->setParameter('prixMax',$prixMax);
-        $query->setMaxResults($limit);
-        $query->setFirstResult($offset);
-        $result=$query->getResult();
-        return $result;
-    }
-
-    public function findByPrixMin($prixMin,$orderBy,$limit,$offset){
-        $em=$this->getEntityManager();
-        $dql="SELECT a
-                FROM App\Entity\Ad a
-                WHERE a.price >= :prixMin";
-        $query = $em->createQuery($dql);
-        $query->setParameter('prixMin',$prixMin);
-        $query->setMaxResults($limit);
-        $query->setFirstResult($offset);
-        $result=$query->getResult();
-        return $result;
-    }
-
-    public function findByCategory($category,$orderBy,$limit,$offset){
-        $em =$this->getEntityManager();
-        $dql="SELECT a
-                FROM App\Entity\Ad a
-                WHERE a.category = :category";
-        $query= $em->createQuery($dql);
-        $query->setParameter('category',$category);
-        $query->setMaxResults($limit);
-        $query->setFirstResult($offset);
-        $result=$query->getResult();
-        return $result;
-    }
 
     /**
      * Retourne les annonces favoris pour un utilisateur
@@ -177,32 +137,5 @@ class AdRepository extends ServiceEntityRepository
         return $result;
 
     }
-//    /**
-//     * @return Ad[] Returns an array of Ad objects
-//     */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Ad
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
